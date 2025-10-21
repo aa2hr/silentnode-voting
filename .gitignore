@@ -1,0 +1,38 @@
+# Ignore environment variables
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+dist
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# MacOS / Linux
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+
+# Vercel
+.vercel
+
+# Lock files (optional)
+package-lock.json
+
+
+# Local backups
+frontend_backup/
+*.bak
+*.tmp
+.DS_Store
