@@ -1,5 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { createInstance } from "@zama-fhe/relayer-sdk/web";
+
+// ✅ Dynamically import correct SDK based on runtime (Node or Web)
+const loadRelayer = async () => {
+  try {
+    if (typeof window === "undefined") {
+      // 🧠 Running on server (Vercel / Node)
+      const { createInstance } = await import("@zama-fhe/relayer-sdk/node");
+      return createInstance;
+    } else {
+      // 🧠 Running in browser (for local fallback)
+      const { createInstance } = await import("@zama-fhe/relayer-sdk/web");
+      return createInstance;
+    }
+  } catch (err) {
+    console.error("❌ Failed to load relayer SDK:", err);
+    throw err;
+  }
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -11,6 +28,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (vote === undefined) {
       return res.status(400).json({ error: "Missing vote parameter" });
     }
+
+    const createInstance = await loadRelayer();
 
     const fhe = await createInstance({
       chainId: 11155111,
@@ -34,11 +53,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       network: "sepolia",
     });
 
-    // ✅ Encrypt function with backward compatibility
-    const encryptFn = (fhe as any).encrypt64 || (fhe as any).encrypt8 || (fhe as any).encrypt;
+    // ✅ Auto-detect encryption function
+    const encryptFn =
+      (fhe as any).encrypt64 || (fhe as any).encrypt8 || (fhe as any).encrypt;
+
     if (!encryptFn) throw new Error("No encryption method available in FHE instance");
 
     const encryptedVote = await encryptFn(vote);
+
     return res.status(200).json({ encryptedVote });
   } catch (error: any) {
     console.error("❌ Encryption error:", error);
