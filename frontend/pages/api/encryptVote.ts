@@ -1,32 +1,48 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { createInstance, SepoliaConfig } from "@zama-fhe/relayer-sdk";
-import { Wallet, providers } from "ethers";
+import { createInstance } from "@zama-fhe/relayer-sdk/web";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    const { voteChoice, userAddress } = req.body;
-    if (![0, 1].includes(voteChoice)) return res.status(400).json({ error: "invalid choice" });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
-    const fhevm = await createInstance({
-      ...SepoliaConfig,
-      network: process.env.NEXT_PUBLIC_RPC_URL || process.env.RPC_URL,
-      relayerUrl: process.env.RELAYER_URL,
+  try {
+    const { vote } = req.body;
+    if (vote === undefined) {
+      return res.status(400).json({ error: "Missing vote parameter" });
+    }
+
+    const fhe = await createInstance({
+      chainId: 11155111,
+      relayerUrl: process.env.NEXT_PUBLIC_RELAYER_URL || "https://relayer.testnet.zama.cloud",
+      verifyingContractAddressDecryption:
+        process.env.NEXT_PUBLIC_VERIFYING_CONTRACT_ADDRESS_DECRYPTION ||
+        "0xb6E160B1ff80D67Bfe90A85eE06Ce0A2613607D1",
+      verifyingContractAddressInputVerification:
+        process.env.NEXT_PUBLIC_VERIFYING_CONTRACT_ADDRESS_INPUT ||
+        "0x7048C39f048125eDa9d678AEbaDfB22F7900a29F",
+      kmsContractAddress:
+        process.env.NEXT_PUBLIC_KMS_CONTRACT_ADDRESS ||
+        "0x1364CBBf2cDF5032C47d8226a6f6FBD2AFCDacAC",
+      inputVerifierContractAddress:
+        process.env.NEXT_PUBLIC_INPUT_VERIFIER_CONTRACT_ADDRESS ||
+        "0xbc91f3daD1A5F19F8390c400196e58073B6a0BC4",
+      aclContractAddress:
+        process.env.NEXT_PUBLIC_ACL_CONTRACT_ADDRESS ||
+        "0x687820221192C5B662b25367F70076A37bc79b6c",
+      gatewayChainId: parseInt(process.env.NEXT_PUBLIC_GATEWAY_CHAIN_ID || "55815", 10),
+      network: "sepolia",
     });
 
-    const publicKey = await fhevm.getPublicKey(userAddress);
+    // ✅ Encrypt function with backward compatibility
+    const encryptFn = (fhe as any).encrypt64 || (fhe as any).encrypt8 || (fhe as any).encrypt;
+    if (!encryptFn) throw new Error("No encryption method available in FHE instance");
 
-    const encrypted = await fhevm.encrypt8(voteChoice);
-    const external = fhevm.toExternalEncrypted(encrypted, publicKey);
-
-    const provider = new providers.JsonRpcProvider(process.env.NEXT_PUBLIC_RPC_URL || process.env.RPC_URL);
-    const serverWallet = new Wallet(process.env.PRIVATE_KEY!, provider);
-
-    const attestation = await fhevm.generateAttestation(external, serverWallet);
-
-    return res.status(200).json({ external, attestation });
-  } catch (err: any) {
-    console.error(err);
-    return res.status(500).json({ error: err.message || String(err) });
+    const encryptedVote = await encryptFn(vote);
+    return res.status(200).json({ encryptedVote });
+  } catch (error: any) {
+    console.error("❌ Encryption error:", error);
+    return res.status(500).json({ error: error.message || "Encryption failed" });
   }
 }
 
