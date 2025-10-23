@@ -2,10 +2,10 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "framework": "nextjs",
-  "buildCommand": "bash .vercel-build.sh",
-  "installCommand": "npm install",
-  "outputDirectory": ".next",
-  "devCommand": "npm run dev",
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "devCommand": "cd frontend && npm run dev",
+  "installCommand": "cd frontend && npm install",
+  "outputDirectory": "frontend/.next",
   "env": {
     "NEXT_PUBLIC_CONTRACT_ADDRESS": "0x5cF05DD28F0A1228B68806d3734641e9754cBbb1",
     "NEXT_PUBLIC_RELAYER_URL": "https://relayer.testnet.zama.cloud",
@@ -15,8 +15,12 @@
     "NEXT_PUBLIC_INPUT_VERIFIER_CONTRACT_ADDRESS": "0xbc91f3daD1A5F19F8390c400196e58073B6a0BC4",
     "NEXT_PUBLIC_ACL_CONTRACT_ADDRESS": "0x687820221192C5B662b25367F70076A37bc79b6c",
     "NEXT_PUBLIC_GATEWAY_CHAIN_ID": "55815",
-    "NEXT_TELEMETRY_DISABLED": "1",
-    "NODE_ENV": "production"
+    "NEXT_PUBLIC_RPC_URL": "https://sepolia.infura.io/v3/ef4b0a46792e4b8fa31c3693bbb16f44",
+    "NEXT_PUBLIC_NUM_OPTIONS": "3",
+    "NEXT_PUBLIC_LOCAL_TEST_MODE": "true",
+    "NEXT_PUBLIC_NETWORK": "sepolia",
+    "NODE_ENV": "production",
+    "NEXT_TELEMETRY_DISABLED": "1"
   }
 }
 
