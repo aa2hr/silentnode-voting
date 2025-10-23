@@ -13,19 +13,20 @@
     "ethers": "^6.13.0",
     "next": "15.0.3",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "tailwindcss": "^3.4.18",
+    "postcss": "^8.5.6",
+    "autoprefixer": "^10.4.21"
   },
   "devDependencies": {
     "@eslint/js": "^9.4.0",
     "@types/react": "^18.3.3",
-    "autoprefixer": "^10.4.21",
     "eslint": "^9.4.0",
     "eslint-config-next": "15.0.3",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.18",
     "typescript": "^5.4.5"
   },
   "engines": {
-    "node": ">=18.18.0 <22"
+    "NODE_VERSION": "20"
   }
 }
+
