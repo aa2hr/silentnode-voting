@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.4.0",
-    "@types/node": "^20.0.0", // downgrade برای سازگاری با React 18
+    "@types/node": "^20.0.0", // downgrade برای React 18
     "@types/react": "^18.3.26",
     "@types/react-dom": "^18.3.0", // اضافه شده
     "eslint": "^9.4.0",
@@ -28,6 +28,6 @@
     "typescript": "^5.9.3"
   },
   "engines": {
-    "node": "20" // اصلاح "NODE_VERSION" به "node"
+    "node": "20"
   }
 }

@@ -13,6 +13,13 @@ else
   echo "✅ node_modules already exists. Skipping install."
 fi
 
+# Clear cache to avoid TypeScript issues
+echo "🧹 Clearing node_modules and .next cache to ensure fresh build..."
+rm -rf node_modules package-lock.json .next
+
+echo "📦 Reinstalling dependencies..."
+npm ci --silent --legacy-peer-deps || (echo "❌ Failed to install dependencies!" && exit 1)
+
 # Check for tsconfig.json to confirm TypeScript project
 if [ ! -f "tsconfig.json" ]; then
   echo "⚠️ tsconfig.json not found. Assuming non-TypeScript project."
