@@ -1,14 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "buildCommand": "npm install && npm run build",
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
   "installCommand": "npm install",
   "outputDirectory": ".next",
-  "framework": "nextjs",
   "devCommand": "npm run dev",
-  "builds": [
-    { "src": "next.config.js", "use": "@vercel/next" }
-  ],
   "env": {
     "NEXT_PUBLIC_CONTRACT_ADDRESS": "0x5cF05DD28F0A1228B68806d3734641e9754cBbb1",
     "NEXT_PUBLIC_RELAYER_URL": "https://relayer.testnet.zama.cloud",
@@ -22,4 +19,3 @@
     "NODE_ENV": "production"
   }
 }
-
