@@ -20,19 +20,18 @@ else
   # Check if TypeScript is installed
   if ! npm ls typescript >/dev/null 2>&1; then
     echo "🧠 Installing TypeScript..."
-    npm install --save-dev typescript --silent || (echo "❌ Failed to install TypeScript!" && exit 1)
+    npm install --save-dev typescript --silent --legacy-peer-deps || (echo "❌ Failed to install TypeScript!" && exit 1)
   fi
 
   # Install React type packages only if project uses React
   if npm ls react >/dev/null 2>&1; then
     echo "🧠 Installing React and Node type packages..."
-    npm install --save-dev @types/react @types/node --silent || (echo "❌ Failed to install React/Node type packages!" && exit 1)
+    npm install --save-dev @types/react @types/node --silent --legacy-peer-deps || (echo "❌ Failed to install React/Node type packages!" && exit 1)
   fi
 
   # Check for missing TypeScript type definitions
   echo "🔍 Checking for missing TypeScript type definitions..."
   missing_types=""
-  # Cache npm ls output for performance
   npm ls --prod --depth=0 --parseable > build-dependencies.log
   for pkg in $(cat build-dependencies.log | awk -F/ '{print $NF}' | sort | uniq); do
     if ! npm ls @types/$pkg >/dev/null 2>&1 && [ "$pkg" != "typescript" ]; then
@@ -45,7 +44,7 @@ else
 
   if [ -n "$missing_types" ]; then
     echo "📦 Installing missing @types packages: $missing_types..."
-    npm install --save-dev $missing_types --silent || (echo "❌ Failed to install missing type packages!" && exit 1)
+    npm install --save-dev $missing_types --silent --legacy-peer-deps || (echo "❌ Failed to install missing type packages!" && exit 1)
   else
     echo "✅ All necessary @types packages are already installed or not needed."
   fi
@@ -54,7 +53,7 @@ fi
 # Preserve Next.js ISR cache for Vercel production builds
 if [ "$VERCEL" = "1" ] && [ "$VERCEL_ENV" = "production" ]; then
   echo "🧹 Preserving .next/cache for ISR and incremental builds..."
-  rm -rf .next && mkdir -p .next/cache || true # Ensure .next/cache exists
+  rm -rf .next && mkdir -p .next/cache || true
 else
   echo "🧹 Cleaning .next cache..."
   rm -rf .next
