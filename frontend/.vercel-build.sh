@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# 🗂 رفتن به پوشه‌ی frontend که Next.js اونجاست
+cd frontend
+
 echo "⚙️ Using Node.js for Vercel build..."
 node -v
 npm -v
