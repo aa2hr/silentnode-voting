@@ -28,7 +28,7 @@ Thumbs.db
 .vercel
 
 # Lock files (optional)
-package-lock.json
+#package-lock.json
 
 
 # Local backups
