@@ -5,38 +5,26 @@ echo "⚙️ Using Node.js for Vercel build..."
 node -v
 npm -v
 
-echo "📦 Ensuring dependencies are installed..."
-if [ ! -d "node_modules" ]; then
-  echo "🧩 node_modules not found. Installing dependencies..."
-  npm ci --silent --legacy-peer-deps || (echo "❌ Failed to install dependencies!" && exit 1)
-else
-  echo "✅ node_modules already exists. Skipping install."
-fi
-
-# Clear cache to avoid TypeScript issues
-echo "🧹 Clearing node_modules and .next cache to ensure fresh build..."
+echo "📦 Cleaning old modules and cache..."
 rm -rf node_modules package-lock.json .next
 
-echo "📦 Reinstalling dependencies..."
-npm ci --silent --legacy-peer-deps || (echo "❌ Failed to install dependencies!" && exit 1)
+echo "📦 Installing all dependencies (including devDependencies)..."
+# Force install to bypass missing peer deps, and include devDeps for TypeScript build
+npm install --legacy-peer-deps --force
 
-# Check for tsconfig.json to confirm TypeScript project
-if [ ! -f "tsconfig.json" ]; then
-  echo "⚠️ tsconfig.json not found. Assuming non-TypeScript project."
+echo "🧩 Verifying TypeScript setup..."
+if [ -f "tsconfig.json" ]; then
+  echo "✅ tsconfig.json found — installing TypeScript toolchain..."
+  npm install --save-dev typescript @types/react @types/node
 else
-  echo "✅ TypeScript project detected."
+  echo "⚠️ tsconfig.json not found — assuming JavaScript-only project."
 fi
 
-# Preserve Next.js ISR cache for Vercel production builds
-if [ "$VERCEL" = "1" ] && [ "$VERCEL_ENV" = "production" ]; then
-  echo "🧹 Preserving .next/cache for ISR and incremental builds..."
-  rm -rf .next && mkdir -p .next/cache || true
-else
-  echo "🧹 Cleaning .next cache..."
-  rm -rf .next
-fi
+echo "🧹 Cleaning .next cache..."
+rm -rf .next
 
 echo "🚀 Building optimized Next.js app..."
-NODE_ENV=production npm run build || (echo "❌ Build failed!" && exit 1)
+NODE_ENV=production npm run build
 
-echo "✅ Vercel build completed successfully!"
+echo "✅ Build completed successfully for Vercel!"
+
