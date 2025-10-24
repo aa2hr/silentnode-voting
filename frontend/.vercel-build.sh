@@ -13,6 +13,9 @@ else
   echo "✅ node_modules already exists. Skipping install."
 fi
 
+echo "🧠 Ensuring TypeScript and typings are installed..."
+npm install --save-dev typescript @types/react @types/react-dom @types/node --legacy-peer-deps --silent || true
+
 echo "🧹 Clearing cache..."
 rm -rf .next
 
