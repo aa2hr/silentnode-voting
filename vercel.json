@@ -3,8 +3,8 @@
   "version": 2,
   "framework": "nextjs",
   "buildCommand": "bash .vercel-build.sh",
-  "installCommand": "cd frontend && npm ci --legacy-peer-deps --include=dev",
-  "devCommand": "cd frontend && npm run dev",
+  "installCommand": "npm ci --legacy-peer-deps --include=dev",
+  "devCommand": "npm run dev",
   "outputDirectory": "frontend/.next",
   "env": {
     "NEXT_PUBLIC_CONTRACT_ADDRESS": "0x5cF05DD28F0A1228B68806d3734641e9754cBbb1",
