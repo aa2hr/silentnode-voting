@@ -5,26 +5,19 @@ echo "⚙️ Using Node.js for Vercel build..."
 node -v
 npm -v
 
-echo "📦 Cleaning old modules and cache..."
-rm -rf node_modules package-lock.json .next
-
-echo "📦 Installing all dependencies (including devDependencies)..."
-# Force install to bypass missing peer deps, and include devDeps for TypeScript build
-npm install --legacy-peer-deps --force
-
-echo "🧩 Verifying TypeScript setup..."
-if [ -f "tsconfig.json" ]; then
-  echo "✅ tsconfig.json found — installing TypeScript toolchain..."
-  npm install --save-dev typescript @types/react @types/node
+echo "📦 Ensuring dependencies are installed..."
+if [ ! -d "node_modules" ]; then
+  echo "🧩 node_modules not found. Installing dependencies..."
+  npm ci --silent --legacy-peer-deps || (echo "❌ Failed to install dependencies!" && exit 1)
 else
-  echo "⚠️ tsconfig.json not found — assuming JavaScript-only project."
+  echo "✅ node_modules already exists. Skipping install."
 fi
 
-echo "🧹 Cleaning .next cache..."
+echo "🧹 Clearing cache..."
 rm -rf .next
 
 echo "🚀 Building optimized Next.js app..."
-NODE_ENV=production npm run build
+npx next build || (echo "❌ Build failed!" && exit 1)
 
-echo "✅ Build completed successfully for Vercel!"
+echo "✅ Vercel build completed successfully!"
 
