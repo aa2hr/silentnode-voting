@@ -1,9 +1,5 @@
-
 #!/bin/bash
 set -e
-
-# 🗂 Change to frontend directory
-cd frontend || (echo "❌ Failed to change to frontend directory!" && exit 1)
 
 echo "⚙️ Using Node.js for Vercel build..."
 node -v
