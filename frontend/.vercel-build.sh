@@ -1,8 +1,9 @@
+
 #!/bin/bash
 set -e
 
-# 🗂 رفتن به پوشه‌ی frontend که Next.js اونجاست
-cd frontend
+# 🗂 Change to frontend directory
+cd frontend || (echo "❌ Failed to change to frontend directory!" && exit 1)
 
 echo "⚙️ Using Node.js for Vercel build..."
 node -v
@@ -16,14 +17,18 @@ else
   echo "✅ node_modules already exists. Skipping install."
 fi
 
-echo "🧠 Ensuring TypeScript and typings are installed..."
-npm install --save-dev typescript @types/react @types/react-dom @types/node --legacy-peer-deps --silent || true
+# Check for tsconfig.json to confirm TypeScript project
+if [ ! -f "tsconfig.json" ]; then
+  echo "⚠️ tsconfig.json not found. Assuming non-TypeScript project."
+else
+  echo "✅ TypeScript project detected."
+fi
 
-echo "🧹 Clearing cache..."
+# Clear cache to ensure fresh build
+echo "🧹 Clearing .next cache..."
 rm -rf .next
 
 echo "🚀 Building optimized Next.js app..."
-npx next build || (echo "❌ Build failed!" && exit 1)
+NODE_ENV=production npm run build || (echo "❌ Build failed!" && exit 1)
 
 echo "✅ Vercel build completed successfully!"
-
