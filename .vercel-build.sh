@@ -8,17 +8,18 @@ echo "⚙️ Using Node.js for Vercel build..."
 node -v
 npm -v
 
-echo "📦 Dependencies already installed by Vercel (including devDependencies)."
-echo "✅ Skipping reinstall to speed up build."
+echo "📦 Ensuring dependencies are installed..."
+rm -rf node_modules package-lock.json # Force clean install
+echo "🧩 Installing dependencies..."
+npm ci --silent --legacy-peer-deps --include=dev || (echo "❌ Failed to install dependencies!" && exit 1)
 
-# Check for TypeScript config
+# TypeScript check
 if [ ! -f "tsconfig.json" ]; then
   echo "⚠️ tsconfig.json not found. Assuming non-TypeScript project."
 else
   echo "✅ TypeScript project detected."
 fi
 
-# Clean cache before build
 echo "🧹 Cleaning .next cache..."
 rm -rf .next
 
@@ -26,4 +27,3 @@ echo "🚀 Building optimized Next.js app..."
 NODE_ENV=production npm run build || (echo "❌ Build failed!" && exit 1)
 
 echo "✅ Vercel build completed successfully!"
-
