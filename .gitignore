@@ -25,11 +25,11 @@ Thumbs.db
 *.tsbuildinfo
 
 # Vercel
-.vercel
+.vercel/*
+!.vercel/project.json
 
 # Lock files (optional)
 #package-lock.json
-
 
 # Local backups
 frontend_backup/
