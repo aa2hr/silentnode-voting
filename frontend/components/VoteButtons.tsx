@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { ethers } from "ethers";
 import ContractABI from "../abi/FHEPrivateVoting.json";
@@ -8,8 +7,7 @@ export default function VoteButtons() {
   const [loading, setLoading] = useState(false);
 
   const sendVote = async (choice: number) => {
-    // ✅ فقط در مرورگر چک می‌کنیم
-    if (typeof window === "undefined" || !(window as any).ethereum) {
+    if (typeof window === "undefined" || !window.ethereum) {
       alert("Please connect your wallet first");
       return;
     }
@@ -17,12 +15,10 @@ export default function VoteButtons() {
     setLoading(true);
 
     try {
-      // اتصال به MetaMask
-      const provider = new ethers.BrowserProvider((window as any).ethereum);
+      const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const address = await signer.getAddress();
 
-      // ارسال درخواست به API برای رمزنگاری رأی
       const res = await fetch("/api/encryptVote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,10 +28,9 @@ export default function VoteButtons() {
       const data = await res.json();
       if (data.error) throw new Error(data.error);
 
-      // فراخوانی تابع رأی‌گیری در قرارداد
       const contract = new ethers.Contract(
         process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!,
-        ContractABI.abi,
+        ContractABI, // ✅ مستقیماً از ContractABI استفاده کن
         signer
       );
 
@@ -71,4 +66,3 @@ export default function VoteButtons() {
     </div>
   );
 }
-
