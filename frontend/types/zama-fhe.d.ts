@@ -18,3 +18,4 @@ declare module '@zama-fhe/relayer-sdk/web' {
     network?: any;
     [key: string]: any;
   }): Promise<FhevmInstance>;
+} // Add this closing brace
