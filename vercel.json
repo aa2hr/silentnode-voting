@@ -2,20 +2,21 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "framework": "nextjs",
-  "buildCommand": "bash .vercel-build.sh",
-  "installCommand": "cd frontend && npm install --legacy-peer-deps --include=dev --force",
-  "devCommand": "cd frontend && npm run dev",
-  "outputDirectory": "frontend/.next",
+  "root": "frontend",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install --legacy-peer-deps --include=dev --force",
+  "devCommand": "npm run dev",
+  "outputDirectory": ".next",
   "builds": [
     {
-      "src": "frontend/.next/**/*",
+      "src": ".next/**/*",
       "use": "@vercel/next"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "frontend/$1"
+      "dest": "/$1"
     }
   ],
   "env": {
