@@ -25,7 +25,7 @@ export default function VoteForm({ contract, fhe }: VoteFormProps) {
 
     try {
       // 🔒 رمزنگاری رأی با FHE SDK
-      const encryptedVote = fhe.encrypt64(choice);
+      const encryptedVote = fhe.encrypt(choice, "uint8");
       console.log("🧩 رأی رمزنگاری‌شده:", encryptedVote);
 
       // 📨 ارسال رأی به قرارداد هوشمند
