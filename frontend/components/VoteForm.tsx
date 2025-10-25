@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { Contract } from "ethers";
 import type { FhevmInstance } from "@zama-fhe/relayer-sdk/web";
@@ -14,29 +13,29 @@ export default function VoteForm({ contract, fhe }: VoteFormProps) {
 
   const handleVote = async () => {
     if (!choice) {
-      alert("لطفاً گزینه خود را وارد کنید.");
+      alert("Please enter your choice.");
       return;
     }
 
     if (!fhe) {
-      alert("FHE SDK هنوز آماده نیست!");
+      alert("FHE SDK is not ready yet!");
       return;
     }
 
     try {
-      // 🔒 رمزنگاری رأی با FHE SDK
-      const encryptedVote = fhe.encrypt(choice, "uint8");
-      console.log("🧩 رأی رمزنگاری‌شده:", encryptedVote);
+      // Encrypt vote with FHE SDK
+      const encryptedVote = fhe.encrypt8(choice);
+      console.log("Encrypted vote:", encryptedVote);
 
-      // 📨 ارسال رأی به قرارداد هوشمند
+      // Send vote to smart contract
       const tx = await contract.vote(encryptedVote);
       await tx.wait();
 
-      alert("✅ رأی شما با موفقیت ارسال شد!");
+      alert("Vote submitted successfully!");
       setChoice("");
     } catch (err) {
-      console.error("❌ خطا در ارسال رأی:", err);
-      alert("ارسال رأی موفقیت‌آمیز نبود.");
+      console.error("Error submitting vote:", err);
+      alert("Failed to submit vote.");
     }
   };
 
@@ -44,7 +43,7 @@ export default function VoteForm({ contract, fhe }: VoteFormProps) {
     <div className="w-full max-w-md flex flex-col gap-4">
       <input
         type="text"
-        placeholder="نام گزینه‌ی خود را وارد کنید (مثلاً CandidateA)"
+        placeholder="Enter your choice (e.g., CandidateA)"
         value={choice}
         onChange={(e) => setChoice(e.target.value)}
         className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -53,9 +52,8 @@ export default function VoteForm({ contract, fhe }: VoteFormProps) {
         onClick={handleVote}
         className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
       >
-        ثبت رأی 🗳
+        Submit Vote 🗳
       </button>
     </div>
   );
 }
-
