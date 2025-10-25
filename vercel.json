@@ -1,12 +1,23 @@
-
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "framework": "nextjs",
-  "buildCommand": "bash ../.vercel-build.sh",
-  "installCommand": "npm install --legacy-peer-deps --include=dev --force",
-  "devCommand": "npm run dev",
-  "outputDirectory": ".next",
+  "buildCommand": "bash .vercel-build.sh",
+  "installCommand": "cd frontend && npm install --legacy-peer-deps --include=dev --force",
+  "devCommand": "cd frontend && npm run dev",
+  "outputDirectory": "frontend/.next",
+  "builds": [
+    {
+      "src": "frontend/.next/**/*",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
+    }
+  ],
   "env": {
     "NEXT_PUBLIC_CONTRACT_ADDRESS": "0x5cF05DD28F0A1228B68806d3734641e9754cBbb1",
     "NEXT_PUBLIC_RELAYER_URL": "https://relayer.testnet.zama.cloud",
