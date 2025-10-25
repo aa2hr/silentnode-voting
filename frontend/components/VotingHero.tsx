@@ -5,7 +5,7 @@ import React, { useState, useCallback } from "react";
 import { ethers, Contract } from "ethers";
 import contractABI from "../abi/FHEPrivateVoting.json";
 
-// ⚙️ Configuration: Contract + Relayer
+// Configuration
 const CONFIG = {
   contractAddress:
     process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ||
@@ -37,7 +37,7 @@ const CONFIG = {
   },
 };
 
-// ✅ Safe Ethereum provider getter
+// Safe Ethereum provider getter
 const getSafeEthereumProvider = (): any => {
   if (typeof window === "undefined") return null;
   const { ethereum } = window as any;
@@ -54,10 +54,10 @@ const VotingHero: React.FC = () => {
   const [status, setStatus] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  // 🌐 Initialize FHE & wallet with fallback
+  // Initialize FHE & wallet
   const initFHE = useCallback(async () => {
     setLoading(true);
-    setStatus("🔄 Connecting to wallet...");
+    setStatus("🔗 Connecting to wallet...");
 
     try {
       const ethProvider = getSafeEthereumProvider();
@@ -68,7 +68,6 @@ const VotingHero: React.FC = () => {
       const ethersProvider = new ethers.BrowserProvider(ethProvider);
       const signer = await ethersProvider.getSigner();
 
-      // ⚙️ Attempt to create FHE instance (fallback to demo mode if relayer offline)
       let fheInstance = null;
       try {
         const { createInstance } = await import("@zama-fhe/relayer-sdk/web");
@@ -81,7 +80,6 @@ const VotingHero: React.FC = () => {
         console.warn("⚠️ Relayer unavailable, switching to demo mode:", err);
       }
 
-      // Connect to contract
       const votingContract = new ethers.Contract(
         CONFIG.contractAddress,
         contractABI,
@@ -98,55 +96,55 @@ const VotingHero: React.FC = () => {
       else
         setStatus("⚠️ Relayer unavailable — running in demo mode");
     } catch (error: any) {
-      console.error("❌ Initialization error:", error);
-      setStatus(`Error: ${error.message || "Initialization failed"}`);
+      console.error("Initialization error:", error);
+      setStatus(`❌ Error: ${error.message || "Initialization failed"}`);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // 🗳️ Cast encrypted vote (or simulate if FHE unavailable)
+  // Cast encrypted vote
   const castVote = useCallback(
     async (optionIndex: number) => {
       if (!contract) {
-        alert("Please connect wallet first.");
+        alert("Please connect your wallet first.");
         return;
       }
 
       try {
         if (!fhe) {
-          setStatus("🧩 Demo mode: vote simulated (FHE disabled)");
+          setStatus("🧪 Demo mode: vote simulated (FHE disabled)");
           return;
         }
 
-        setStatus("🔐 Encrypting vote...");
+        setStatus("🔒 Encrypting vote...");
         const encryptFn =
-          fhe.encrypt ||
-          fhe.encrypt8 ||
-          fhe.encrypt64 ||
+          (fhe as any)?.encrypt ||
+          (fhe as any)?.encrypt8 ||
+          (fhe as any)?.encrypt64 ||
           (() => {
-            throw new Error("No supported encryption method found");
+            throw new Error("No supported encryption method found in FHE instance");
           });
 
         const encryptedChoice = await encryptFn(optionIndex);
-        setStatus("📤 Submitting vote...");
+
+        setStatus("🚀 Submitting encrypted vote...");
         const tx = await contract.voteFHE(encryptedChoice, "0x");
         await tx.wait();
 
         setStatus("✅ Vote submitted successfully!");
       } catch (error: any) {
-        console.error("❌ Vote error:", error);
-        setStatus(`Error: ${error.message || "Vote failed"}`);
+        console.error("Vote error:", error);
+        setStatus(`❌ Error: ${error.message || "Vote failed"}`);
       }
     },
     [fhe, contract]
   );
 
-  // 🎨 UI Rendering
   return (
     <section className="min-h-screen flex flex-col items-center justify-center px-6 bg-gradient-to-br from-gray-950 to-gray-800 text-white">
       <h1 className="text-4xl font-extrabold mb-6 tracking-tight text-center">
-        🗳️ SilentNode Private Voting
+        SilentNode Private Voting
       </h1>
 
       {!account ? (
@@ -159,19 +157,19 @@ const VotingHero: React.FC = () => {
               : "bg-blue-600 hover:bg-blue-700"
           }`}
         >
-          {loading ? "🔄 Connecting..." : "🔌 Connect Wallet & Initialize"}
+          {loading ? "Connecting..." : "Connect Wallet & Initialize"}
         </button>
       ) : (
         <div className="flex flex-col items-center gap-6">
           <p className="text-sm bg-green-700 px-3 py-1 rounded-full font-mono">
-            ✅ Connected: {account.slice(0, 6)}...{account.slice(-4)}
+            Connected: {account.slice(0, 6)}...{account.slice(-4)}
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { label: "🟢 Vote Alice", index: 0, color: "bg-green-600 hover:bg-green-500" },
-              { label: "🟡 Vote Bob", index: 1, color: "bg-yellow-600 hover:bg-yellow-500" },
-              { label: "🔴 Vote Charlie", index: 2, color: "bg-red-600 hover:bg-red-500" },
+              { label: "Vote Alice", index: 0, color: "bg-green-600 hover:bg-green-500" },
+              { label: "Vote Bob", index: 1, color: "bg-yellow-600 hover:bg-yellow-500" },
+              { label: "Vote Charlie", index: 2, color: "bg-red-600 hover:bg-red-500" },
             ].map(({ label, index, color }) => (
               <button
                 key={label}

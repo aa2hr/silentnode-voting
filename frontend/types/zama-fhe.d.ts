@@ -6,5 +6,15 @@ declare module '@zama-fhe/relayer-sdk/web' {
     encrypt64?: (value: string | number) => any;
   }
 
-  export function createInstance(): Promise<FhevmInstance>;
-}
+  export function createInstance(config?: {
+    chainId?: number;
+    relayerUrl?: string;
+    verifyingContractAddressDecryption?: string;
+    verifyingContractAddressInputVerification?: string;
+    kmsContractAddress?: string;
+    inputVerifierContractAddress?: string;
+    aclContractAddress?: string;
+    gatewayChainId?: number;
+    network?: any;
+    [key: string]: any;
+  }): Promise<FhevmInstance>;
